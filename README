@@ -1,0 +1,4 @@
+This repository holds patches to fix problems in KDE 4.13 and earlier that occur
+in an Apple OS X environment. Its directory structure follows that of central
+KDE Projects and repositories, except that it is all one repository, contains
+only patches and holds only those sub-directories for which patches exist.
