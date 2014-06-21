@@ -2,3 +2,21 @@ This repository holds patches to fix problems in KDE 4.13 and earlier that occur
 in an Apple OS X environment. Its directory structure follows that of central
 KDE Projects and repositories, except that it is all one repository, contains
 only patches and holds only those sub-directories for which patches exist.
+
+DIRECTORY STRUCTURE
+
+extragear
+  office
+    kmymoney
+kde
+  kde-runtime
+  kdelibs
+
+PATCHES
+
+kde/kdelibs/KDElibsRaster.patch		Enforces use of raster in KApplication
+extragear/office/kmymoney/KMMRaster.patch Exempt KMyMoney from raster graphics
+
+kde/kdelibs/fixCrashInKCrash.patch	Make sure Dr Konqi runs after a crash
+kde/kde-runtime/fixBacktraceCrash.patch Make sure a backtrace is produced
+kde/kde-runtime/raiseDrKonqi.patch	Make sure Dr Konqi's dialog is visible
