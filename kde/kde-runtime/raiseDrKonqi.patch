@@ -1,0 +1,15 @@
+diff --git a/drkonqi/main.cpp b/drkonqi/main.cpp
+index 75e060e..ceb1d81 100644
+--- a/drkonqi/main.cpp
++++ b/drkonqi/main.cpp
+@@ -106,6 +106,10 @@ int main(int argc, char* argv[])
+ 
+     DrKonqiDialog *w = new DrKonqiDialog();
+     w->show();
++#ifdef Q_OS_MAC
++    // In Apple OS X, make sure the Dr Konqi dialog comes to the front.
++    w->raise();
++#endif
+     int ret = qa->exec();
+ 
+     DrKonqi::cleanup();

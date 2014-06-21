@@ -1,0 +1,22 @@
+diff --git a/drkonqi/gdbhighlighter.cpp b/drkonqi/gdbhighlighter.cpp
+index 7cd0aa9..961d5de 100644
+--- a/drkonqi/gdbhighlighter.cpp
++++ b/drkonqi/gdbhighlighter.cpp
+@@ -70,9 +70,17 @@ void GdbHighlighter::highlightBlock(const QString& text)
+         QString lineStr = text.mid(cur, diff).append('\n');
+         // -1 since we skip the first line
+         QMap< int, BacktraceLine >::iterator it = lines.lowerBound(lineNr - 1);
++#ifndef Q_OS_MAC
++        // On Apple OS X this caused a crash if the last item had > 1 line.
+         Q_ASSERT(it != lines.end());
++#endif
+         // lowerbound would return the next higher item, even though we want the former one
++#ifdef Q_OS_MAC
++        // At last call on Apple OS X, do not crash: just re-use the last line.
++        if ((it ==lines.end()) || (it.key() > lineNr - 1)) {
++#else
+         if (it.key() > lineNr - 1) {
++#endif
+             --it;
+         }
+         const BacktraceLine& line = it.value();
