@@ -3,14 +3,20 @@ in an Apple OS X environment. Its directory structure follows that of central
 KDE Projects and repositories, except that it is all one repository, contains
 only patches and holds only those sub-directories for which patches exist.
 
+There is also a subdirectory KDEMacPortsTools that holds tools for building and
+testing KDE on Apple OS X, from source repositories using kdesrc-build. See the
+README_FIRST file in that subdirectory for details.
+
 DIRECTORY STRUCTURE
 
-extragear
-  office
-    kmymoney
-kde
-  kde-runtime
-  kdelibs
+  KDEMacPortsTools
+
+  extragear
+    office
+      kmymoney
+  kde
+    kde-runtime
+    kdelibs
 
 PATCHES
 
