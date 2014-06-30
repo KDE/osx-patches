@@ -1,0 +1,65 @@
+#!/bin/sh
+
+##
+# Script to configure and install .my-setup, kdesrc-buildrc and CMakeOptions.txt
+# in a KDE development, maintenance or build environment in Apple OS X.
+#
+# Parameter $1  The full or relative path of the directory you will use for KDE.
+#
+# The config sample files for KDE dirs should be in the same dir as this script.
+
+configdir=`dirname $0`
+
+if test -z "$1"; then
+    echo "Usage: $0 KDEbasedir"
+    exit 1
+fi
+
+if test -d "$1"; then			# Calculate the full path portably...
+    startdir=`pwd`			# Save the current directory full path.
+    builtin cd $1			# Avoid using a cd() from ~/.profile.
+    kdebasedir=`pwd`			# Calculate full path of KDE base dir.
+    builtin cd $startdir		# Restore the current directory.
+    if ! test -r "$kdebasedir/.my-setup"; then
+        sed -e "s,KDEbase,$kdebasedir,g" \
+            <$configdir/my-setup >$kdebasedir/.my-setup
+    fi
+else
+    echo "$1 is not a directory or not accessible"
+    exit 1
+fi
+
+# Load $kdebasedir/.my-setup temporarily, to get some values to configure.
+source $kdebasedir/.my-setup
+
+if test ! -d "$KDESRCBUILD"; then
+    echo 'kdesrc-build area not defined in $KDESRCBUILD as a proper directory'
+    exit 2
+fi
+
+if test ! -d "$MACPORTS_PREFIX"; then
+    echo 'MacPorts prefix not defined in $MACPORTS_PREFIX as a proper directory'
+    exit 2
+fi
+
+# Substitute config values into config samples and copy them to KDE base dir.
+sed -e "s,MACports,$MACPORTS_PREFIX,g
+        s,KDEdir,$KDEDIR,g
+	s,KDEhome,$KDEHOME,g
+	s,KDEapps,$BUNDLE_INSTALL_DIR,g
+" <$configdir/MacPortsCMake.txt >$kdebasedir/CMakeOptions.txt
+
+sed -e "s,KDEsrc,$KDE_SRC,g
+        s,KDEdir,$KDEDIR,g
+	s,MACports,$MACPORTS_PREFIX,g
+	s,BASEdir,$kdebasedir,g
+" <$configdir/kdesrc-buildrc >$kdebasedir/kdesrc-buildrc
+
+echo
+echo Installed configured files .my-setup, CMakeOptions.txt and kdesrc-buildrc
+echo in directory $kdebasedir.
+echo
+echo Please insert file $configdir/profile.addition
+echo at or near the start of '~/.profile', if you have not already done so.
+echo Then you can cd to `basename $kdebasedir` to set up your KDE environment.
+echo

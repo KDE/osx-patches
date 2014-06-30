@@ -1,0 +1,71 @@
+# The full path of your chosen KDE development location (it is edited in)
+export KDEBASE=KDEbase
+
+# Base directory where you are going to do all KDE development or building.
+BASE=$(dirname $KDEBASE)
+
+# Unique ID of this KDE environment (used in BUNDLE_INSTALL_DIR and other dirs)
+BASEID=$(basename $KDEBASE)
+
+# The installation directory of the kdesrc-build scripts (default)
+export KDESRCBUILD=$BASE/kdesrc-build
+
+# The location for any software you are not building yourself (default)
+export MACPORTS_PREFIX=/opt/local
+
+# The directories for the KDE software you ARE building yourself
+# These follow the structure assumed by kdesrc-build
+export KDE_SRC=$KDEBASE/kdesrc		# Local repositories and source code
+export KDE_BUILD=$KDE_SRC/build		# Working directory for builds
+# Note: Comprehensive logs are kept in $KDE_SRC/log by kdesrc-build.
+
+# Save the contents of the PATH variables as they are at first use of .my-setup
+if test -z "$MACPORTS_PATH"; then
+    export MACPORTS_PATH=$PATH
+    export MACPORTS_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+    export MACPORTS_PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+    export MACPORTS_MANPATH=$MANPATH
+fi
+
+# Restore the original paths (to limit growth if there are several .my-setups)
+export PATH=$MACPORTS_PATH
+export LD_LIBRARY_PATH=$MACPORTS_LD_LIBRARY_PATH
+export PKG_CONFIG_PATH=$MACPORTS_PKG_CONFIG_PATH
+export MANPATH=$MACPORTS_MANPATH
+
+# Set up the Qt environment
+# Use Qt from MacPorts or change QTDIR if building your own version of Qt
+export QTDIR=$MACPORTS_PREFIX		 # Contains bin, include, lib and share
+if test "$QTDIR" != "$MACPORTS_PREFIX"; then
+    export PATH=$QTDIR/bin:$PATH
+fi
+
+# No colon separator if LD_LIBRARY_PATH or PKG_CONFIG_PATH is initially empty
+export LD_LIBRARY_PATH=$QTDIR/lib${LD_LIBRARY_PATH:+":$LD_LIBRARY_PATH"}
+export PKG_CONFIG_PATH=$QTDIR/lib${PKG_CONFIG_PATH:+":$PKG_CONFIG_PATH"}
+ 
+# Set up the independent KDE environment
+export KDEDIR=$KDEBASE/kde4		# Contains bin, include, lib and share
+export KDEHOME=$KDEBASE/home/.${BASEID}	# Protect your regular KDE config files
+export KDETMP=/tmp/${BASEID}-${USER}	# Protect your regular KDE caches, etc.
+export KDEVARTMP=/var/tmp/${BASEID}-${USER}
+mkdir -p $KDETMP
+mkdir -p $KDEVARTMP
+
+# Prefer to get KDE executables, libraries, packages, etc. from this environment.
+export PATH=$KDEDIR/bin:$PATH
+export LD_LIBRARY_PATH=$KDEDIR/lib:$LD_LIBRARY_PATH
+export PKG_CONFIG_PATH=$KDEDIR/lib/pkgconfig:$PKG_CONFIG_PATH
+export MANPATH=$KDEDIR/share/man:$MANPATH
+export QT_PLUGIN_PATH=$KDEDIR/lib/kde4/plugins
+export BUNDLE_INSTALL_DIR=/Applications/$BASEID
+export PYTHON_SITE_PACKAGES_DIR=$KDEDIR/lib/python2.6/site-packages/PyKDE4
+export KDEDIRS=$KDEDIR
+
+unset BASE BASEID			# Not visible outside this script.
+ 
+# Build KDE source from local repositories only, with no update from central.
+alias kbl='$KDESRCBUILD/kdesrc-build --rc-file $KDEBASE/kdesrc-buildrc --no-src'
+
+# Update local repositories from central repositories and then build KDE source.
+alias kbc='$KDESRCBUILD/kdesrc-build --rc-file $KDEBASE/kdesrc-buildrc'

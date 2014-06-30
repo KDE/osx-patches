@@ -1,0 +1,78 @@
+# CMake options for building KDE 4 in an OS X and MacPorts environment.
+# Build Debug version and enable developer warnings.
+#
+# Explicitly define certain headers and libraries, to avoid conflicts with
+# those installed into system paths by Apple OS X or MacPorts or the user.
+#
+# Some options were considered and excluded(-), included(+) or undecided(?).
+                        # - -DCMAKE_INSTALL_PREFIX (supplied by kdesrc-build)
+                        # - -DBUILD_doc=OFF
+                        # - -DBUILD_docs=OFF
+                        # - -DWITH_ENCHANT=ON
+                        # - -DWITH_Soprano=ON
+                        # - -DWITH_Avahi=ON
+                        # - -DKDE_DEFAULT_HOME=Library/Preferences/KDE
+                        # - -DCMAKE_C_FLAGS_RELEASE="-DNDEBUG"
+                        # + -DCMAKE_POLICY_DEFAULT_CMP0022=OLD
+                        # ? -DQT_ZLIB_LIBRARY=MACports/lib/libz.dylib
+
+	  cmake-options -DCMAKE_VERBOSE_MAKEFILE=ON \
+                        -DCMAKE_COLOR_MAKEFILE=ON \
+                        -DCMAKE_BUILD_TYPE=Debug \
+                        -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+                        -DCMAKE_INSTALL_RPATH=KDEdir/lib \
+                        -DCMAKE_INSTALL_NAME_DIR=KDEdir/lib \
+                        -DCMAKE_SYSTEM_PREFIX_PATH=MACports:/usr \
+                        -DCMAKE_MODULE_PATH=KDEdir/share/cmake/modules:MACports/share/cmake/modules \
+                        -DCMAKE_FIND_FRAMEWORK=LAST \
+                        -DKDE4_BUILD_TESTS:BOOL=OFF \
+                        -Wdev \
+                        -DBUILD_SHARED_LIBS=ON \
+                        -DBUNDLE_INSTALL_DIR=KDEapps \
+                        -DKDE_DISTRIBUTION_TEXT="MacPorts/Mac OS X/kdesrc-build" \
+                        -DQT_QT_INCLUDE_DIR=MACports/include \
+                        -DQT_QMAKESPEC=macx-g++ \
+                        -DQT_ZLIB_LIBRARY=MACports/lib/libz.dylib \
+                        -DQT_PNG_LIBRARY=MACports/lib/libpng.dylib \
+                        -DDOCBOOKXSL_DIR=MACports/share/xsl/docbook-xsl \
+                        -DGETTEXT_INCLUDE_DIR=MACports/include \
+                        -DGETTEXT_LIBRARY=MACports/lib/libgettextlib.dylib \
+                        -DGIF_INCLUDE_DIR=MACports/include \
+                        -DGIF_LIBRARY=MACports/lib/libgif.dylib \
+                        -DJASPER_INCLUDE_DIR=MACports/include \
+                        -DJASPER_LIBRARY=MACports/lib/libjasper.dylib \
+                        -DJPEG_INCLUDE_DIR=MACports/include \
+                        -DJPEG_LIBRARY=MACports/lib/libjpeg.dylib \
+                        -DLBER_LIBRARIES=MACports/lib/liblber.dylib \
+                        -DLDAP_INCLUDE_DIR=MACports/include \
+                        -DLDAP_LIBRARIES=MACports/lib/libldap.dylib \
+                        -DLIBEXSLT_INCLUDE_DIR=MACports/include \
+                        -DLIBEXSLT_LIBRARIES=MACports/lib/libexslt.dylib \
+                        -DLIBICALSS_LIBRARY=MACports/lib/libicalss.dylib \
+                        -DLIBICAL_INCLUDE_DIRS=MACports/include \
+                        -DLIBICAL_LIBRARY=MACports/lib/libical.dylib \
+                        -DLIBINTL_INCLUDE_DIR=MACports/include \
+                        -DLIBINTL_LIBRARY=MACports/lib/libintl.dylib \
+                        -DLIBXML2_INCLUDE_DIR=MACports/include/libxml2 \
+                        -DLIBXML2_LIBRARIES=MACports/lib/libxml2.dylib \
+                        -DLIBXML2_XMLLINT_EXECUTABLE=MACports/bin/xmllint \
+                        -DLIBXSLT_INCLUDE_DIR=MACports/include \
+                        -DLIBXSLT_LIBRARIES=MACports/lib/libxslt.dylib \
+                        -DMYSQLD_EXECUTABLE=MACports/libexec/mysqld \
+                        -DMYSQL_INCLUDE_DIR=MACports/include/mysql5/mysql \
+                        -DMYSQL_LIB_DIR=MACports/lib/mysql5/mysql \
+                        -DMYSQLCONFIG_EXECUTABLE=MACports/bin/mysql_config5 \
+                        -DOPENAL_INCLUDE_DIR=/System/Library/Frameworks/OpenAL.framework/Headers \
+                        -DOPENAL_LIBRARY=/System/Library/Frameworks/OpenAL.framework \
+                        -DPNG_INCLUDE_DIR=MACports/include \
+                        -DPNG_PNG_INCLUDE_DIR=MACports/include \
+                        -DPNG_LIBRARY=MACports/lib/libpng.dylib \
+                        -DQCA2_INCLUDE_DIR=MACports/include/QtCrypto \
+                        -DQCA2_LIBRARIES=MACports/lib/libqca.dylib \
+                        -DTIFF_INCLUDE_DIR=MACports/include \
+                        -DTIFF_LIBRARY=MACports/lib/libtiff.dylib \
+                        -DKDE_DEFAULT_HOME=KDEhome \
+                        -DWITH_HSPELL=OFF \
+                        -DWITH_FAM=OFF \
+                        -DKDE4_AUTH_BACKEND_NAME="OSX" \
+                        -DCMAKE_POLICY_DEFAULT_CMP0022=OLD

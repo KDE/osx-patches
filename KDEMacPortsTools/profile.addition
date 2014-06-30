@@ -1,0 +1,110 @@
+###
+## A .profile section to set up variables and functions for KDE 4 development
+ 
+# This will make the debug output prettier
+export KDE_COLOR_DEBUG=1
+export QTEST_COLORED=1
+ 
+##
+# A modification of the standard "cd" command.
+#
+# If you cd anywhere into a development or maintenance directory tree,
+# the Shell environment is automatically modified by a file called
+# .my-setup, which should be found in the new directory or further
+# up the tree. The purpose of the new environment is to protect your
+# normal user-environment from accidental changes by versions of code
+# that are in the development or maintenance area, especially when
+# used with KDE software.
+
+function cd() {
+  if test -z "$1"; then
+    builtin cd
+  elif test -z "$2"; then
+    builtin cd "$1"
+  else
+    builtin cd "$1" "$2"
+  fi
+  # Look for a file called .my-setup, here or further up the tree
+  _f=$(
+       while ! test -e ".my-setup"; do
+           builtin cd ..
+           if test "$PWD" = "/"; then
+               exit 1
+           fi
+       done
+       echo $PWD/.my-setup
+       )
+  if test -n "$_f" -a "$_lastf" != "$_f"; then
+    echo "Loading $_f"
+    _lastf="$_f"
+    source "$_f"		# Change the environment, using .my-setup
+  fi
+  echo -n -e "\033]0;$PWD\007"	# Put working directory in window title
+}
+ 
+##
+# A function to change to a build directory easily. See also cs.
+# Usage: cb kde/kdelibs
+#   will change to $KDE_BUILD/kde/kdelibs
+# Usage: cb
+#   will simply go to the build folder if you are currently in a src folder
+#   Example:
+#     $ pwd
+#     /kdedev/KDE_MAC/kdesrc/kde/kdelibs
+#     $ cb && pwd
+#     /kdedev/KDE_MAC/kdesrc/build/kde/kdelibs
+#
+function cb {
+        local dest
+ 
+        # Make sure build directory exists.
+        mkdir -p "$KDE_BUILD"
+ 
+        # command line argument
+        if test -n "$1"; then
+                cd "$KDE_BUILD/$1"
+                return
+        fi
+        # substitute src dir with build dir
+        dest=`pwd | sed -e s,$KDE_SRC,$KDE_BUILD,`
+        if test ! -d "$dest"; then
+                # build directory does not exist, create
+                mkdir -p "$dest"
+        fi
+        cd "$dest"
+}
+ 
+##
+# A function to change to a source directory easily. See also cb.
+# Usage: cs kde/kdelibs
+#       will change to $KDE_SRC/kde/kdelibs
+# Usage: cs
+#   will simply go to the source folder if you are currently in a build folder
+#   or to the head of the source tree if you are in a source folder
+#   Example:
+#     $ pwd
+#     /kdedev/KDE_MAC/kdesrc/build/kde/kdelibs
+#     $ cs && pwd
+#     /kdedev/KDE_MAC/kdesrc/kde/kdelibs
+#
+function cs {
+        local dest current
+ 
+        # Make sure source directory exists.
+        mkdir -p "$KDE_SRC"
+ 
+        # command line argument
+        if test -n "$1"; then
+                cd "$KDE_SRC/$1"
+        else
+                # substitute build dir with src dir
+                dest=`pwd | sed -e s,$KDE_BUILD,$KDE_SRC,`
+                current=`pwd`
+                if [ "$dest" = "$current" ]; then
+                        cd "$KDE_SRC"
+                else
+                        cd "$dest"
+                fi
+        fi
+}
+ 

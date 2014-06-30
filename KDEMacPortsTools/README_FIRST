@@ -1,0 +1,159 @@
+KDE Development for Apple OS X and MacPorts
+-------------------------------------------
+
+This is a set of scripts and sample files for setting up a directory tree in
+which you can build, develop, maintain or test a version of KDE, in an Apple
+OS X environment, independently of other versions of KDE installed in MacPorts
+or other KDE directory trees.  It works because Qt 4 and KDE 4 recognise several
+Shell environment variables that allow development and test versions of KDE
+applications and libraries to run and link to each other without affecting the
+environment, data files and caches of the versions you may use day-to-day.
+
+Files              Contents
+
+kdesrc-buildrc     Generic config for the kdesrc-build scripts to build KDE from
+                   any branch of central source-code repositories or from local
+                   development and testing repositories
+MacPortsCMake.txt  Generic CMake options for kdesrc-build to use with MacPorts
+                   and ensure that the correct library is always used, /usr,
+                   /opt/local or KDE/Qt, and that libraries build in OS X style
+my-setup           Generic environment setup for testing versions of KDE
+makekdearea        A script to configure and install the above in a chosen area
+profile.addition   Functions needed in ~/.profile to automate use of my-setup
+
+Before starting, create the top level directory structure of the area where you
+are going to work, e.g. /kdedev/KDE_MAC or ~/KDE_MAC or ~/kde4.13 or whatever
+general location and unique subdirectory ID you choose.  It is probably better
+to set up a separate area, such as /kdedev, rather than use $HOME, to avoid
+confusion and give easier control over file space, backup and indexing.
+
+The subdirectory ID should be something fairly unique within your system,
+because it is used to name temporary directories.  Also, applications you build
+go into /Applications/KDE_MAC, /Applications/kde4.13 or whatever ID you choose.
+It is possible to have several different KDE versions under your main directory
+area, such as kde4.13, kde4.14, etc.
+
+Now make sure MacPorts is installed and contains a suite of KDE 4 packages and
+their dependencies.  This will be used to obtain any packages you do not wish to
+compile and build yourself, such as Qt4-Mac, Phonon or OpenAL sound.  It also
+makes a useful backdrop to before/after testing of development and bug fixes.
+
+Also make sure kdesrc-build is downloaded and installed, e.g. in ~/kdesrc-build
+or /kdedev/kdesrc-build.  This is a set of scripts for automatically building
+KDE systems from KDE repositories.  See http://kdesrc-build.kde.org and the
+manual at http://kdesrc-build.kde.org/documentation/index.html.  Kdesrc-build
+needs Perl 5.12 or later.
+
+Kdesrc-build is the best way to keep track of changes in KDE libraries and
+dependencies, because it always uses current repositories, knows where to find
+them and in what order to build them.  It is used widely by KDE developers.
+
+Now invoke the script "makekdearea" (in the directory containing this README)
+with a parameter giving the location of the KDE directory structure you wish
+to set up.  You can use an absolute or relative path to the KDE structure, e.g.
+        ./makekdearea ../KDE_MAC
+        ./makekdearea /kdedev/KDE_MAC
+
+This will copy the sample file "my-setup" to ".my-setup", a hidden file in your
+chosen area, and edit the NEW file ".my-setup" to reflect the location and Shell
+environment you have chosen.  Then it will copy and re-configure two files and
+place them in your KDE area: kdesrc-buildrc and CMakeOptions.txt.  The first
+controls what modules get built by kdesrc-build, in what order and where they
+get installed.  The second controls exactly where CMake looks for packages and
+libraries in a MacPorts and Apple OS X environment.
+
+The file "profile.addition" must be inserted into your "~/.profile" file
+somewhere at or near the beginning, then you are ready to go.  The Shell
+functions in this fragment automatically set  up and insulate your environment
+whenever you change to a directory in your KDE development or test area.
+
+Whenever you wish to use your new development environment, open a new terminal
+window and "cd" to your working directory (e.g. cd /kdedev/KDE_MAC).  The "cd"
+function in "~/.profile" will do the "cd" and then source the .my-setup file
+it finds there, thus setting up your unique KDE environment.  If your window
+was previously in the required directory but you have re-booted or re-started
+the terminal app, "cd ." will invoke ".my-setup" and get the environment set up.
+
+You may wish to read over the configured files to make sure all your modules,
+libraries, packages, etc. are coming from and going to the places you require.
+By default, qt4-mac comes from MacPorts and so does the Nepomuk chain and other
+external libraries, such as OpenAL.  Also Phonon is obtained from MacPorts
+because it does not build properly in OS X and outside of MacPorts.  For example
+you may wish to build your own Qt4-Mac from source, using kdesrc-build.
+
+Finally, to clone and build all the basic KDE source modules, "cd" to your KDE
+area and use the alias "kbc" to run kdesrc-build, download the source from
+central repositories and build it (it takes a while the first time).  The alias
+"kbl" does the same for local repositories (i.e. it does not update them from
+central).  Note that kdesrc-build uses a file ~/.kdesrc-buildrc to configure
+the build (by default), but kbc and kbl will take their config from the file
+kdesrc-buildrc in whatever KDE area you are currently working in, as determined
+by .my-setup, which defines those aliases.  So you can have several of those
+files for building and testing different things.
+
+If you supply a module name to kdesrc-build (kbc or kbl) it just builds that
+module, e.g. "kbc kdegames" will build KDE Games, if you have it uncommented in
+your kdesrc-buildrc file.  Modules that are not part of the main KDE release
+can be built from source by using a + and a repository path before the module
+name, e.g. kbc +extragear/office/kmymoney will download and build source for
+KMyMoney, or kbl +extragear/office/kmymoney will do the same without updating
+from the central repository.
+
+There are several variations on the basic theme presented above.  For example,
+if you are developing or debugging a single KDE app, it may be sufficient to
+work on it directly in your local repository for that app and use the "build"
+directory to run "make", for quick and easy testing, once you have everything
+set up.  On the other hand, if you edit some core library code, it may be
+necessary to "spring clean" your area as follows and re-run kdesrc-build:
+
+        rm -rf /Applications/MyID/*		# Remove and rebuild apps
+        rm -rf /kdedev/MyID/kdesrc/build	# Remove CMake caches
+        rm -rf /kdedev/MyID/kde4		# Remove and rebuild KDE 4
+
+It takes a little longer, but not that much, once you have a kdesrc-build setup.
+
+Technical Notes
+---------------
+
+1. If you are working a lot on one app or library, it may be worth setting up
+   aliases to "cd" to the appropriate source or build directory, either in
+   .profile or .my-setup, such "kms" or kmb" to change quickly to the KMyMoney
+   source or build area.
+
+2. KDE names its repositories like the corresponding MacPorts packages, but
+   with some differences, such as the use or non-use and position of "4".
+
+3. Kdesrc-build puts all source code under sub-directory kdesrc and then follows
+   the structure seen at https://projects.kde.org/projects and also at
+   https://projects.kde.org/projects/kde.  Each sub-project has its own git
+   repository, which can be viewed by following the Repository link whenever
+   it appears in the sidebar of the project pages.
+
+4. KDE source code will need to have MacPorts patches added, to get it to build.
+
+5. Patch files for each KDE module can be found in the directory indicated by:
+         ls `port dir KDE_module_name`/files
+   The git repository git@git.kde.org:osx-patches (from which these tools come)
+   may also contain, from time to time, patches that have not yet been included
+   in MacPorts or KDE's main repositories.  Also some MacPorts patches can get
+   committed and pushed to the main KDE repositories from time to time.  So
+   beware of omissions and clashes between patches and the KDE source code
+   cloned and updated in your local repository by kdesrc-build.
+
+6. The rather lengthy file MacPortsCMake.txt contains most of the CMake options
+   used by MacPorts builds, but see the comments in MacPortsCMake.txt.  The file
+   is configured intially by the makekdearea script and installed in your chosen
+   development area.  It is then included in your kdesrc-buildrc file whenever
+   kdesrc-build runs.  You can edit these configured CMake options if you wish.
+
+7. The CMake options overcome two major problems in building KDE source code
+   with CMake on Apple OS X.
+
+      a) Some commonly used lower level components, such as libz.dylib, exist
+         in both Apple OS X (/usr) and MacPorts (/opt/local) and CMake needs
+         specific options to avoid getting the two intermixed, which can cause
+         fatal results at build time or run time.
+
+      b) In Apple OS X, library files need to contain their full RPATH, as
+         opposed to leaving it blank.  Libraries that are built with RPATH blank
+         will not link properly.
