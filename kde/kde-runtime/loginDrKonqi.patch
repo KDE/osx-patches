@@ -1,0 +1,29 @@
+diff --git a/drkonqi/reportassistantpages_bugzilla.cpp b/drkonqi/reportassistant
+index 86ca327..ac836d0 100644
+--- a/drkonqi/reportassistantpages_bugzilla.cpp
++++ b/drkonqi/reportassistantpages_bugzilla.cpp
+@@ -283,9 +283,24 @@ void BugzillaLoginPage::loginClicked()
+ {
+     if (!(ui.m_userEdit->text().isEmpty() || ui.m_passwordEdit->text().isEmpty(
+ 
++#ifdef Q_OS_MAC
++        // On Apple OS X, the following test is omitted because kded4, the KDE
++        // daemon is not usually running (OS X is not a KDE desktop).  Also,
++        // kcookiejar does not correctly detect whether cookies are enabled on
++        // bugs.kde.org because it is not looking at the preferences in the
++        // browser the user has selected by using Apple OS X config options
++        // (e.g. Safari or Firefox).  It is probably looking at KDE config data
++#else
+         if (!canSetCookies()) {
++/*          The outcome of this test should not prevent a user from reporting
++ *          a crash in a KDE application.  The test and messages should be only
++ *          advisory.  After all, the worst that can happen if there are no
++ *          cookies is that bugs.kde.org will not remember the user's login.
++ *
+             return;
++ */
+         }
++#endif
+ 
+         ui.m_loginButton->setEnabled(false);
+ 
