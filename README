@@ -18,7 +18,15 @@ DIRECTORY STRUCTURE
     kde-runtime
     kdelibs
 
-PATCHES
+CURRENT PATCH-BASE (as at 30 June 2014)
+
+branch-group stable-qt4 # (the last KDE 4 release, plus bugfixes)
+
+Basically this is branch KDE/4.13 for KDE 4 software that is still being
+released (releases 4.13.x) and branch master for KDE 4 software that is
+frozen (e.g. libraries where KDE development has moved to KF 5).
+
+LIST OF PATCHES
 
 kde/kdelibs/KDElibsRaster.patch		Enforces use of raster in KApplication
 extragear/office/kmymoney/KMMRaster.patch Exempt KMyMoney from raster graphics
