@@ -34,5 +34,6 @@ extragear/office/kmymoney/KMMRaster.patch Exempt KMyMoney from raster graphics
 kde/kdelibs/fixCrashInKCrash.patch	Make sure Dr Konqi runs after a crash
 kde/kde-runtime/fixBacktraceCrash.patch Make sure a backtrace is produced
 kde/kde-runtime/raiseDrKonqi.patch	Make sure Dr Konqi's dialog is visible
+kde/kde-runtime/loginDrKonqi.patch	Always let the user report the crash
 
 kde/kdelibs/fixReportBug.patch		Fix Help->Report Bug... menu item
